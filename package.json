@@ -1,0 +1,19 @@
+{
+  "name": "the-waffle-whisperer",
+  "version": "1.0.0",
+  "description": "WafCorp Feedback Discord Bot for the WafCorp modteam",
+  "main": "src/bot.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "author": "DrThestral",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^2.4.0",
+    "chalk": "^4.1.2",
+    "crypto-js": "^4.2.0",
+    "discord-api-types": "^0.37.111",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.7"
+  }
+}
