@@ -38,7 +38,7 @@ module.exports = {
           "Specify the time during which your description was/is important in timestamp format"
         )
         .setMinValue(1621966680)
-        .setMaxValue(Math.floor(Date.now() / 1000))
+        //.setMaxValue(Math.floor(Date.now() / 1000))
     ),
 
   async execute(interaction, client) {
