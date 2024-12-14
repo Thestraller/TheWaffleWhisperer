@@ -14,24 +14,24 @@ module.exports = (client) => {
       for (const file of commandFiles) {
         const command = require(`../../commands/${folder}/${file}`);
         commands.set(command.data.name, command);
-        /*if (folder === "admin") commandArrayDev.push(command.data.toJSON());
-        else */commandArray.push(command.data.toJSON());
+        if (folder === "admin") commandArrayDev.push(command.data.toJSON());
+        else commandArray.push(command.data.toJSON());
       }
     }
 
     const clientId = process.env.clientID;
-    const guildIds = [process.env.guild0ID];
+    const guildIds = [process.env.guild0ID, process.env.guild1ID];
     const rest = new REST({ version: "9" }).setToken(process.env.token);
     try {
       console.log("Started refreshing application (/) commands");
 
-      /*await rest.put(Routes.applicationCommands(clientId), {
+      await rest.put(Routes.applicationCommands(clientId), {
         body: client.commandArray,
-      });*/
+      });
 
       for (const guildId of guildIds) {
         await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-          body: client.commandArray,
+          body: commandArrayDev,
         });
       }
       console.log("Successfully reloaded application (/) commands");

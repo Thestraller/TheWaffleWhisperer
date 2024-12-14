@@ -45,10 +45,10 @@ module.exports = {
     let moderator = interaction.options.getString("moderator");
     let time = interaction.options.getInteger("time");
     let grade = interaction.options.getInteger("grade");
-    let userID = interaction.member.id;
+    let userID = interaction.user.id;
 
-    guild = client.guilds.cache.get(process.env.guild0ID);
-    member = guild.members.cache.get(userID);
+    guild = client.guilds.cache.get(process.env.guild1ID);
+    member = guild.members.fetch(userID);
     if (!member) {
       await interaction.reply({
         content:
