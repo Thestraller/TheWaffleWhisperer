@@ -46,11 +46,17 @@ module.exports = {
     let time = interaction.options.getInteger("time");
     let grade = interaction.options.getInteger("grade");
     let userID = interaction.member.id;
-    let user = CryptoJS.AES.encrypt(userID, process.env.key);
 
-    if (!moderator) moderator = "\`not specified\`";
-    if (!time) time = "\`not specified\`";
-    else time = `<t:${time}>`;
+    guild = client.guilds.cache.get(process.env.guild0ID);
+    member = guild.members.cache.get(userID);
+    if (!member) {
+      await interaction.reply({
+        content:
+          "You need to be in the [Waffles Are Better Discord Server](<https://discord.gg/24qxN7eq59>) to be able to whisper to me.",
+        ephemeral: true,
+      });
+      return;
+    }
 
     const blockedUsers = fs
       .readFileSync("./blocked.txt", "utf-8")
@@ -68,6 +74,12 @@ module.exports = {
         return;
       }
     }
+
+    let user = CryptoJS.AES.encrypt(userID, process.env.key);
+
+    if (!moderator) moderator = "`not specified`";
+    if (!time) time = "`not specified`";
+    else time = `<t:${time}>`;
 
     const modal = new ModalBuilder()
       .setCustomId("whisperModal")
@@ -91,7 +103,7 @@ module.exports = {
         const moderationEmbed = new EmbedBuilder()
           .setTitle("Palantir brings a new message...")
           .setDescription(
-            `**Moderator:** \`${moderator}\`\n**Time:** ${time}\n**Grade:** \`${grade}\`\n**Encrypted User ID:** \`${user}\`\n\n**Description**\n${desc}`
+            `**Moderator:** \`${moderator}\`\n**Time:** ${time}\n**Grade:** \`${grade}\`\n**Encrypted User ID:** ||\`${user}\`||\n\n**Description**\n${desc}`
           )
           .setColor(client.color)
           .setImage(
