@@ -97,7 +97,7 @@ module.exports = {
     await interaction.showModal(modal);
 
     interaction
-      .awaitModalSubmit({ time: 120_000 })
+      .awaitModalSubmit({ time: 300_000 })
       .then((interaction) => {
         let desc = interaction.fields.getTextInputValue("eventDescription");
         const moderationEmbed = new EmbedBuilder()
