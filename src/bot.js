@@ -4,6 +4,7 @@ const fs = require("fs");
 
 const client = new Client({ intents: GatewayIntentBits.Guilds });
 client.commands = new Collection();
+client.modals = new Collection();
 client.commandArray = [];
 client.color = 0xff0000;
 
@@ -18,4 +19,5 @@ for (const folder of functionFolders) {
 
 client.handleEvents();
 client.handleCommands();
+client.handleComponents();
 client.login(process.env.token);

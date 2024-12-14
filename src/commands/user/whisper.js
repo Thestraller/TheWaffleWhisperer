@@ -1,5 +1,13 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ModalBuilder,
+  ActionRowBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+} = require("discord.js");
 const CryptoJS = require("crypto-js");
+const fs = require("fs");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -36,16 +44,80 @@ module.exports = {
     let moderator = interaction.options.getString("moderator");
     let time = interaction.options.getInteger("time");
     let grade = interaction.options.getInteger("grade");
-    let user = CryptoJS.AES.encrypt(interaction.member.id, process.env.key);
-    
-    //console.log(CryptoJS.AES.decrypt(user, process.env.key).toString(CryptoJS.enc.Utf8));
+    let userID = interaction.member.id;
+    let user = CryptoJS.AES.encrypt(userID, process.env.key);
 
     if (!moderator) moderator = "None";
     if (!time) time = "None";
-    else time = `<t:${time}>`
+    else time = `<t:${time}>`;
 
-    await interaction.reply({
-      content: `Moderator: ${moderator}\nTime: ${time}\nGrade: ${grade}\nUser: ${user}`,
-    });
+    const blockedUsers = fs
+      .readFileSync("./blocked.txt", "utf-8")
+      .split(/\r?\n/);
+    for (const blockedUser of blockedUsers) {
+      if (
+        CryptoJS.AES.decrypt(blockedUser, process.env.key).toString(
+          CryptoJS.enc.Utf8
+        ) == userID
+      ) {
+        await interaction.reply({
+          content: `You appear to be blocked from using this feature. If you think this is a mistake, please contact [DrThestral](<https://discord.com/users/509752937388703744>).`,
+          ephemeral: true,
+        });
+        return;
+      }
+    }
+
+    const modal = new ModalBuilder()
+      .setCustomId("whisperModal")
+      .setTitle("Description");
+
+    const textInput = new TextInputBuilder()
+      .setCustomId("eventDescription")
+      .setLabel("Describe your experience here")
+      .setRequired(true)
+      .setStyle(TextInputStyle.Paragraph);
+
+    modal.addComponents(new ActionRowBuilder().addComponents(textInput));
+
+    await interaction.showModal(modal);
+
+    interaction
+      .awaitModalSubmit({ time: 120_000 })
+      .then((interaction) => {
+        const moderationEmbed = new EmbedBuilder()
+          .setTitle("Palantir brings a new message...")
+          .setDescription(
+            `**Moderator:** \`${moderator}\`\n**Time:** ${time}\n**Grade:** \`${grade}\`\n**Encrypted User ID:** \`${user}\`\n\n**Description**\n${interaction.fields.getTextInputValue(
+              "eventDescription"
+            )}`
+          )
+          .setColor(client.color)
+          .setImage(
+            "https://media1.tenor.com/m/Sf4wqQIsd-oAAAAd/the-lord-of-the-rings-the-fellowship-of-the-ring-the-lord-of-the-rings.gif"
+          )
+          .setFooter({
+            iconURL: client.user.displayAvatarURL(),
+            text: "*Insert ominous whispering noises*",
+          });
+
+        client.channels.cache
+          .get(process.env.channelID)
+          .send({ embeds: [moderationEmbed] });
+
+        interaction.reply({
+          content: `**You sent the following:**`,
+          embeds: [moderationEmbed],
+          ephemeral: true,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        interaction.reply({
+          content:
+            "Something went wrong! If this problem occurs more often, please report it to [DrThestral](<https://discord.com/users/509752937388703744>)!",
+          ephemeral: true,
+        });
+      });
   },
 };
