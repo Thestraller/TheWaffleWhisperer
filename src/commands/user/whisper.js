@@ -29,6 +29,7 @@ module.exports = {
         .setDescription(
           "Specify a specific moderator or a group of moderators who are important for your description"
         )
+        .setMaxLength(80)
     )
     .addIntegerOption((option) =>
       option
@@ -47,8 +48,8 @@ module.exports = {
     let userID = interaction.member.id;
     let user = CryptoJS.AES.encrypt(userID, process.env.key);
 
-    if (!moderator) moderator = "None";
-    if (!time) time = "None";
+    if (!moderator) moderator = "\`not specified\`";
+    if (!time) time = "\`not specified\`";
     else time = `<t:${time}>`;
 
     const blockedUsers = fs
@@ -76,7 +77,8 @@ module.exports = {
       .setCustomId("eventDescription")
       .setLabel("Describe your experience here")
       .setRequired(true)
-      .setStyle(TextInputStyle.Paragraph);
+      .setStyle(TextInputStyle.Paragraph)
+      .setMaxLength(3_000);
 
     modal.addComponents(new ActionRowBuilder().addComponents(textInput));
 
@@ -85,12 +87,11 @@ module.exports = {
     interaction
       .awaitModalSubmit({ time: 120_000 })
       .then((interaction) => {
+        let desc = interaction.fields.getTextInputValue("eventDescription");
         const moderationEmbed = new EmbedBuilder()
           .setTitle("Palantir brings a new message...")
           .setDescription(
-            `**Moderator:** \`${moderator}\`\n**Time:** ${time}\n**Grade:** \`${grade}\`\n**Encrypted User ID:** \`${user}\`\n\n**Description**\n${interaction.fields.getTextInputValue(
-              "eventDescription"
-            )}`
+            `**Moderator:** \`${moderator}\`\n**Time:** ${time}\n**Grade:** \`${grade}\`\n**Encrypted User ID:** \`${user}\`\n\n**Description**\n${desc}`
           )
           .setColor(client.color)
           .setImage(
