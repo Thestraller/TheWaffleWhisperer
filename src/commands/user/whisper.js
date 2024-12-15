@@ -126,9 +126,6 @@ module.exports = {
       })
       .catch((err) => {
         console.error(err);
-        client.channels.cache.get(process.env.serverChannelID).send({
-          content: error,
-        });
       });
   },
 };
