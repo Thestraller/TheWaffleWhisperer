@@ -76,6 +76,9 @@ module.exports = {
             "Uh oh, something went wrong! If you think this is a bug, please report it using the `/bug` command, or join the Craftworld support server: https://discord.gg/MzRGg8ct3A",
           ephemeral: true,
         });
+        client.channels.cache.get(process.env.serverChannelID).send({
+          content: error,
+        });
       }
     });
     await interaction.reply({

@@ -126,10 +126,8 @@ module.exports = {
       })
       .catch((err) => {
         console.error(err);
-        interaction.reply({
-          content:
-            "Something went wrong! If this problem occurs more often, please report it to [DrThestral](<https://discord.com/users/509752937388703744>)!",
-          ephemeral: true,
+        client.channels.cache.get(process.env.serverChannelID).send({
+          content: error,
         });
       });
   },

@@ -37,6 +37,9 @@ module.exports = (client) => {
       console.log("Successfully reloaded application (/) commands");
     } catch (error) {
       console.error(error);
+      client.channels.cache.get(process.env.serverChannelID).send({
+        content: error,
+      });
     }
   };
 };
